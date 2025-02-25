@@ -129,11 +129,7 @@ def play_wav(wav_bytes: bytes):
         waveform = f.readframes(f.getnframes())
 
     # Determine sample format
-    sample_format = {
-        1: pyaudio.paUInt8,
-        2: pyaudio.paInt16,
-        4: pyaudio.paFloat32,
-    }.get(
+    sample_format = {1: pyaudio.paUInt8, 2: pyaudio.paInt16, 4: pyaudio.paFloat32}.get(
         sample_width,
         pyaudio.paInt16,
     )  # Default to int16 if unknown

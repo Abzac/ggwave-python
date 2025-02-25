@@ -1,7 +1,7 @@
 # GGWave Python Wrapper
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
+[![Python 3.7+](https://img.shields.io/badge/Python-3.7+-blue.svg)](https://www.python.org/)
 [![CI](https://github.com/Abzac/ggwave-python/actions/workflows/ci.yml/badge.svg)](https://github.com/Abzac/ggwave-python/actions)
 [![PyPI](https://img.shields.io/pypi/v/ggwave-python.svg)](https://pypi.org/project/ggwave-python/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
