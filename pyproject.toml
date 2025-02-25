@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ggwave_python"
-version = "0.1.10"
+version = "0.1.11"
 description = "A Python wrapper for GGWave – data-over-sound communication"
 authors = ["Abzac <rapturec@gmail.com>"]
 license = "MIT"
@@ -34,7 +34,7 @@ numpy = { version = ">=1.22.0", optional = true }
 audio = ["pyaudio", "numpy"]
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.0"
+pytest = "^8.3.4"
 ruff = "^0.9.7"
 black = ">=24.3.0"
 pre-commit = ">=2.20.0"
