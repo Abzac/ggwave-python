@@ -1,0 +1,120 @@
+# Ruff configuration file
+
+# Python target version
+target-version = "py310"
+
+# Respect .gitignore and other ignore files
+respect-gitignore = true
+
+# Display source code snippets and fixes
+show-fixes = true
+
+# Code style settings
+indent-width = 4
+line-length = 120
+
+# Output format
+output-format = "grouped"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+[format]
+# Like Black, use double quotes for strings.
+quote-style = "single"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[lint]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Rules to select
+select = ["ALL"]
+
+# Rules to ignore
+ignore = [
+    "TRY002",  # prohibits Exceptions/BaseException-only capturing
+    "TRY003",  # Avoid specifying long messages outside the exception class
+    "BLE001",  # Avoid using blind exception catching
+    "D",  # Docstring issues, maybe fix it later
+    "T201", "PTH123", "EM101", # prints, pathlib, exception literals
+    "ANN003", "FBT001", # type annotatiosn for kwargs, boolean positionals
+]
+
+# Allow autofix for all enabled rules
+fixable = ["ALL"]
+
+# Per-file ignores
+[lint.per-file-ignores]
+"**/tests/*" = ["F811", "S101"]  # for dependency-injected fixtures, asserts
+
+# Flake8 Annotations settings
+[lint.flake8-annotations]
+allow-star-arg-any = true
+ignore-fully-untyped = true
+mypy-init-return = true
+suppress-dummy-args = true
+suppress-none-returning = true
+
+# isort settings
+[lint.isort]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+known-first-party = []
+no-lines-before = []
+
+# Flake8 Quotes settings
+[lint.flake8-quotes]
+avoid-escape = true
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = "double"

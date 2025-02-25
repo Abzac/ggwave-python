@@ -1,7 +1,6 @@
 # GGWave Python Wrapper
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.9](https://img.shields.io/badge/Python-3.9-blue.svg)](https://www.python.org/)
 [![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![CI](https://github.com/Abzac/ggwave-python/actions/workflows/ci.yml/badge.svg)](https://github.com/Abzac/ggwave-python/actions)
 [![PyPI](https://img.shields.io/pypi/v/ggwave-python.svg)](https://pypi.org/project/ggwave-python/)
@@ -39,7 +38,7 @@ pip install ggwave_python[audio]
 
 ### Encoding and decoding messages
 ```python
-from ggwave import GGWave, ProtocolId
+from ggwave_python import GGWave, ProtocolId
 
 gg = GGWave()
 try:
@@ -52,23 +51,36 @@ finally:
 
 ### Real-time audio transmission (requires PyAudio)
 ```python
+from ggwave_python import GGWave, ProtocolId, waveform_utils
+
 gg = GGWave()
 try:
     waveform = gg.encode("Test message", ProtocolId.AUDIBLE_FAST, volume=20)
-    gg.play_waveform(waveform)
+    waveform_utils.play_waveform(waveform)
 finally:
     gg.free()
 ```
 
 ### Real-time audio reception
 ```python
+from ggwave_python import GGWave, waveform_utils
+
 gg = GGWave()
 try:
-    for message in gg.listen():
+    for message in waveform_utils.listen():
         print("Received:", message.decode("utf-8"))
 finally:
     gg.free()
 ```
+
+### WAV Tools
+
+On how to convert waveforms into WAV-format and back, please see [WAV Example](examples/wav_example.py).
+
+### More examples
+
+For more examples please see [Examples](examples/).
+
 
 ## ⚙️ Technical Details
 GGWave transmits data using **frequency-shift keying (FSK)**, allowing devices to communicate via sound. 

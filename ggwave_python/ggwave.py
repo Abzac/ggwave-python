@@ -1,17 +1,6 @@
-from collections.abc import Generator
 from enum import IntEnum, IntFlag
-from typing import Optional
 
 import ggwave
-
-PYAUDIO_ENABLED = False
-
-try:
-    import pyaudio
-
-    PYAUDIO_ENABLED = True
-except ImportError:
-    pass
 
 GGWAVE_UNSET = object()  # Sentinel value to distinguish unset parameters
 
@@ -28,8 +17,7 @@ class SampleFormat(IntEnum):
 
 
 class ProtocolId(IntEnum):
-    """
-    Defines different transmission protocols available in GGWave.
+    """Defines different transmission protocols available in GGWave.
 
     # Modulation (Tx)
 
@@ -131,7 +119,7 @@ class GGWave:
     MAX_INSTANCES = 4  # Hardcoded limit in GGWave
     _instances_count = 0  # Active instances counter
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 Too many arguments in function definition
         self,
         payload_length: int | None = GGWAVE_UNSET,  # Default: -1 (variable length)
         sample_rate_inp: float | None = GGWAVE_UNSET,  # Default: 48000.0 Hz
@@ -144,11 +132,9 @@ class GGWave:
         operating_mode: OperatingMode | None = GGWAVE_UNSET,  # Default: RX_AND_TX
         *,
         enable_log: bool = False,
-        pyaudio_instance: Optional["pyaudio.PyAudio"] = None,
         **kwargs,
     ):
-        """
-        Initializes a GGWave instance.
+        """Initializes a GGWave instance.
 
         Args:
             payload_length: The length of the transmitted payload (-1 for variable length).
@@ -161,11 +147,11 @@ class GGWave:
             sample_format_out: Format of the output audio samples.
             operating_mode: Specifies whether GGWave will transmit, receive, or both.
             enable_log: Enables internal GGWave logging (prints debug output).
-            pyaudio_instance: Allows passing an existing PyAudio instance to avoid multiple initializations.
             kwargs: Any additional parameters that may be supported in the future.
+
         """
         if GGWave._instances_count >= GGWave.MAX_INSTANCES:
-            raise RuntimeError("Maximum number of GGWave instances reached (4).")
+            raise RuntimeError('Maximum number of GGWave instances reached (4).')
 
         if enable_log:
             self.enable_log()
@@ -175,28 +161,26 @@ class GGWave:
         # Get default parameters and update them
         self.parameters = ggwave.getDefaultParameters()
         updates = {
-            "payloadLength": payload_length,
-            "sampleRateInp": sample_rate_inp,
-            "sampleRateOut": sample_rate_out,
-            "sampleRate": sample_rate,
-            "samplesPerFrame": samples_per_frame,
-            "soundMarkerThreshold": sound_marker_threshold,
-            "sampleFormatInp": sample_format_inp,
-            "sampleFormatOut": sample_format_out,
-            "operatingMode": operating_mode,
+            'payloadLength': payload_length,
+            'sampleRateInp': sample_rate_inp,
+            'sampleRateOut': sample_rate_out,
+            'sampleRate': sample_rate,
+            'samplesPerFrame': samples_per_frame,
+            'soundMarkerThreshold': sound_marker_threshold,
+            'sampleFormatInp': sample_format_inp,
+            'sampleFormatOut': sample_format_out,
+            'operatingMode': operating_mode,
         }
 
         # Apply user-defined values if they are set
         self.parameters.update(
-            {k: v for k, v in updates.items() if v is not GGWAVE_UNSET}
+            {k: v for k, v in updates.items() if v is not GGWAVE_UNSET},
         )
         self.parameters.update(kwargs)
 
         # Create GGWave instance
         self.instance = ggwave.init(self.parameters)
         GGWave._instances_count += 1
-
-        self._pyaudio_instance = pyaudio_instance  # Store optional PyAudio instance
 
     def __del__(self):
         self.free()
@@ -207,8 +191,6 @@ class GGWave:
             ggwave.free(self.instance)
             self.instance = None
             GGWave._instances_count -= 1
-        if self._pyaudio_instance is not None:
-            self._pyaudio_instance.terminate()
 
     def encode(
         self,
@@ -218,16 +200,22 @@ class GGWave:
     ) -> bytes:
         """Encodes a given payload into an audio waveform."""
         if not payload:
-            return b""
-        return ggwave.encode(
-            payload, protocolId=protocol.value, volume=volume, instance=self.instance
+            return b''
+        return (
+            ggwave.encode(
+                payload,
+                protocolId=protocol.value,
+                volume=volume,
+                instance=self.instance,
+            )
+            or b''
         )
 
     def decode(self, waveform: bytes) -> bytes:
         """Decodes an audio waveform into the original data, if successful."""
         if not waveform:
-            return b""
-        return ggwave.decode(self.instance, waveform)
+            return b''
+        return ggwave.decode(self.instance, waveform) or b''
 
     @staticmethod
     def disable_log():
@@ -239,114 +227,19 @@ class GGWave:
         """Enables GGWave internal logging."""
         ggwave.enableLog()
 
-    def toggle_rx_protocol(self, protocol: ProtocolId, state: bool):
-        """
-        Enables or disables a specific reception (Rx) protocol.
+    @classmethod
+    def toggle_rx_protocol(cls, protocol: ProtocolId, state: bool):
+        """Enables or disables a specific reception (Rx) protocol.
 
         This allows restricting the number of decoding protocols,
         which can help reduce false positives and improve accuracy.
         """
         ggwave.rxToggleProtocol(protocol.value, int(state))
 
-    def toggle_tx_protocol(self, protocol: ProtocolId, state: bool):
-        """
-        Enables or disables a specific transmission (Tx) protocol.
+    @classmethod
+    def toggle_tx_protocol(cls, protocol: ProtocolId, state: bool):
+        """Enables or disables a specific transmission (Tx) protocol.
 
         Disabling unused protocols can reduce memory usage.
         """
         ggwave.txToggleProtocol(protocol.value, int(state))
-
-    def play_waveform(
-        self,
-        waveform: bytes,
-        sample_rate: int = 48000,
-        channels: int = 1,
-        sample_format: int | None = GGWAVE_UNSET,
-    ):
-        """
-        Plays an audio waveform using the system's default output device.
-
-        Args:
-            waveform: The audio data to be played.
-            sample_rate: The sample rate of the waveform (default: 48000 Hz).
-            channels: The number of audio channels (default: 1).
-            sample_format: The audio sample format (default: float32).
-        """
-        p = self._enable_pyaudio()
-
-        if sample_format is GGWAVE_UNSET:
-            sample_format = pyaudio.paFloat32  # Default to 32-bit float
-
-        stream = p.open(
-            format=sample_format, channels=channels, rate=sample_rate, output=True
-        )
-
-        try:
-            stream.write(waveform)
-        finally:
-            stream.stop_stream()
-            stream.close()
-
-    def listen(
-        self, sample_rate: int = 48000, chunk_size: int = 1024, channels: int = 1
-    ) -> Generator[bytes, None, None]:
-        """
-        Continuously listens for incoming audio and attempts to decode GGWave signals.
-
-        Args:
-            sample_rate: The input sample rate in Hz (default: 48000).
-            chunk_size: The number of samples per frame (default: 1024).
-            channels: The number of audio input channels (default: 1).
-
-        Yields:
-            Decoded GGWave messages as byte sequences.
-        """
-        p = self._enable_pyaudio()
-
-        stream = p.open(
-            format=pyaudio.paFloat32,
-            channels=channels,
-            rate=sample_rate,
-            input=True,
-            frames_per_buffer=chunk_size,
-        )
-
-        try:
-            while True:
-                data = stream.read(chunk_size, exception_on_overflow=False)
-                res = self.decode(data)
-                if res:
-                    yield res
-        except KeyboardInterrupt:
-            pass
-        finally:
-            stream.stop_stream()
-            stream.close()
-
-    def _enable_pyaudio(
-        self, pyaudio_instance: Optional["pyaudio.PyAudio"] = None
-    ) -> "pyaudio.PyAudio":
-        """
-        Ensures that a PyAudio instance is available for audio playback or recording.
-
-        Args:
-            pyaudio_instance: An existing PyAudio instance (optional).
-
-        Returns:
-            A PyAudio instance ready for use.
-
-        Raises:
-            RuntimeError: If PyAudio is not installed.
-        """
-        if pyaudio_instance is not None:
-            self._pyaudio_instance = pyaudio_instance
-            return self._pyaudio_instance
-
-        if not PYAUDIO_ENABLED:
-            raise RuntimeError(
-                "PyAudio is not installed. Install it with 'pip install pyaudio'."
-            )
-
-        # Create a new PyAudio instance if none exists
-        self._pyaudio_instance = pyaudio.PyAudio()
-        return self._pyaudio_instance
