@@ -38,4 +38,4 @@ init:
 
 pre-commit:
 	@echo "Running pre-commit hooks on all files..."
-	pre-commit run --all-files
+	$(POETRY) run pre-commit run --all-files

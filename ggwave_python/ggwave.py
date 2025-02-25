@@ -223,6 +223,8 @@ class GGWave:
 
     def decode(self, waveform: bytes) -> bytes | None:
         """Decodes an audio waveform into the original data, if successful."""
+        if not waveform:
+            return None
         return ggwave.decode(self.instance, waveform)
 
     @staticmethod
