@@ -1,12 +1,14 @@
 # GGWave Python Wrapper
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Python 3.9](https://img.shields.io/badge/Python-3.9-blue.svg)](https://www.python.org/)
+[![Python 3.10](https://img.shields.io/badge/Python-3.10-blue.svg)](https://www.python.org/)
 [![CI](https://github.com/Abzac/ggwave-python/actions/workflows/ci.yml/badge.svg)](https://github.com/Abzac/ggwave-python/actions)
+[![PyPI](https://img.shields.io/pypi/v/ggwave-python.svg)](https://pypi.org/project/ggwave-python/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Linter: Ruff](https://img.shields.io/badge/linter-ruff-orange.svg)](https://github.com/astral-sh/ruff)
 [![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
+[![Tests](https://img.shields.io/github/actions/workflow/status/Abzac/ggwave-python/ci.yml?label=tests&logo=pytest)](https://github.com/Abzac/ggwave-python/actions)
 
 A Python wrapper for GGWave, a data-over-sound communication library.
 
