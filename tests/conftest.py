@@ -11,6 +11,6 @@ def ggwave():
     instance.free()
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def sample_message():
     return 'Hello, world!'

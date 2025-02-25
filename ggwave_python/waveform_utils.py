@@ -1,24 +1,8 @@
 from collections.abc import Generator
 
-PYAUDIO_ENABLED = False
-
-try:
-    import pyaudio
-
-    PYAUDIO_ENABLED = True
-except ImportError:
-    pass
-
+from ggwave_python.optionals import _check_pyaudio
 
 GGWAVE_UNSET = object()
-
-
-def _check_pyaudio():
-    if not PYAUDIO_ENABLED:
-        raise RuntimeError(
-            "PyAudio is not installed. Install it with 'pip install pyaudio'.",
-        )
-    return pyaudio.PyAudio()
 
 
 def play_waveform(
@@ -36,23 +20,28 @@ def play_waveform(
         sample_format: The audio sample format (default: float32).
 
     """
-    p = _check_pyaudio()
+    pyaudio = _check_pyaudio()
 
     if sample_format is GGWAVE_UNSET:
         sample_format = pyaudio.paFloat32  # Default to 32-bit float
 
-    stream = p.open(
-        format=sample_format,
-        channels=channels,
-        rate=sample_rate,
-        output=True,
-    )
+    p = pyaudio.PyAudio()
 
     try:
-        stream.write(waveform)
+        stream = p.open(
+            format=sample_format,
+            channels=channels,
+            rate=sample_rate,
+            output=True,
+        )
+
+        try:
+            stream.write(waveform)
+        finally:
+            stream.stop_stream()
+            stream.close()
     finally:
-        stream.stop_stream()
-        stream.close()
+        p.terminate()
 
 
 def listen(
@@ -71,22 +60,27 @@ def listen(
         Audio data as byte sequences.
 
     """
-    p = _check_pyaudio()
+    pyaudio = _check_pyaudio()
 
-    stream = p.open(
-        format=pyaudio.paInt16,
-        channels=channels,
-        rate=sample_rate,
-        input=True,
-        frames_per_buffer=chunk_size,
-    )
+    p = pyaudio.PyAudio()
 
     try:
-        while True:
-            yield stream.read(chunk_size, exception_on_overflow=False)
+        stream = p.open(
+            format=pyaudio.paInt16,
+            channels=channels,
+            rate=sample_rate,
+            input=True,
+            frames_per_buffer=chunk_size,
+        )
+
+        try:
+            while True:
+                yield stream.read(chunk_size, exception_on_overflow=False)
+        finally:
+            stream.stop_stream()
+            stream.close()
+
     except KeyboardInterrupt:
         pass
     finally:
-        stream.stop_stream()
-        stream.close()
         p.terminate()

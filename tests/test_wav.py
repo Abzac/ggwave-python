@@ -1,14 +1,18 @@
 import pytest
 
-from ggwave_python import ProtocolId, wav_utils, waveform_utils
+from ggwave_python import ProtocolId, optionals, wav_utils
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def encoded_waveform(ggwave, sample_message):
     """Encodes a message into a waveform."""
     return ggwave.encode(sample_message, ProtocolId.AUDIBLE_FAST, volume=20)
 
 
+@pytest.mark.skipif(
+    not optionals.PYAUDIO_ENABLED or not optionals.NUMPY_ENABLED,
+    reason='PyAudio or Numpy is not installed',
+)
 def test_encode_decode_wav(ggwave, encoded_waveform, sample_message):
     """Test encoding into WAV, then decoding back."""
     sample_rate, sample_format, channels = wav_utils.ggwave_to_waveform_params(ggwave)
@@ -26,7 +30,10 @@ def test_encode_decode_wav(ggwave, encoded_waveform, sample_message):
     assert decoded.decode('utf-8') == sample_message, 'Decoded message should match original'
 
 
-@pytest.mark.skipif(not waveform_utils.PYAUDIO_ENABLED, reason='PyAudio is not installed')
+@pytest.mark.skipif(
+    not optionals.PYAUDIO_ENABLED or not optionals.NUMPY_ENABLED,
+    reason='PyAudio or Numpy is not installed',
+)
 def test_play_wav(encoded_waveform, ggwave):
     """Test that play_wav does not raise errors."""
     sample_rate, sample_format, channels = wav_utils.ggwave_to_waveform_params(ggwave)

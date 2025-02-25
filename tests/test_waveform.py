@@ -1,9 +1,12 @@
 import pytest
 
-from ggwave_python import ProtocolId, waveform_utils
+from ggwave_python import ProtocolId, optionals, waveform_utils
 
 
-@pytest.mark.skipif(not waveform_utils.PYAUDIO_ENABLED, reason='PyAudio is not installed, skipping audio tests')
+@pytest.mark.skipif(
+    not optionals.PYAUDIO_ENABLED,
+    reason='PyAudio is not installed, skipping audio tests',
+)
 def test_play_waveform(ggwave):
     """Test playing a waveform (should not raise an error)."""
     waveform = ggwave.encode('Test sound', ProtocolId.AUDIBLE_FAST, volume=20)
@@ -13,7 +16,10 @@ def test_play_waveform(ggwave):
         pytest.fail(f'play_waveform raised an exception: {e}')
 
 
-@pytest.mark.skipif(not waveform_utils.PYAUDIO_ENABLED, reason='PyAudio is not installed, skipping audio tests')
+@pytest.mark.skipif(
+    not optionals.PYAUDIO_ENABLED,
+    reason='PyAudio is not installed, skipping audio tests',
+)
 def test_listen_generator():
     """Test that the listen method is a generator."""
     gen = waveform_utils.listen()

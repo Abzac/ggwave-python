@@ -1,9 +1,8 @@
 import io
 import wave
 
-import numpy as np
-
 from ggwave_python import GGWave, SampleFormat
+from ggwave_python.optionals import _check_numpy, _check_pyaudio
 
 
 def waveform_to_wav(
@@ -24,6 +23,8 @@ def waveform_to_wav(
         bytes: WAV file data.
 
     """
+    np = _check_numpy()
+
     sample_width = {SampleFormat.U8: 1, SampleFormat.I16: 2, SampleFormat.F32: 4}.get(
         sample_format,
         2,
@@ -72,6 +73,8 @@ def wav_to_waveform(
             - int: Number of channels.
 
     """
+    np = _check_numpy()
+
     wav_buffer = io.BytesIO(wav_bytes)
     with wave.open(wav_buffer, 'rb') as f:
         sample_rate = f.getframerate()
@@ -118,7 +121,8 @@ def play_wav(wav_bytes: bytes):
         wav_bytes (bytes): WAV file data.
 
     """
-    import pyaudio
+    pyaudio = _check_pyaudio()
+    np = _check_numpy()
 
     # Read WAV parameters
     wav_buffer = io.BytesIO(wav_bytes)
@@ -158,11 +162,12 @@ def play_wav(wav_bytes: bytes):
             output=True,
         )
 
-        chunk_size = 1024  # Optimal buffer size
-        for i in range(0, len(waveform), chunk_size):
-            stream.write(waveform[i : i + chunk_size])  # Play in chunks
-
-        stream.stop_stream()
-        stream.close()
+        try:
+            chunk_size = 1024  # Optimal buffer size
+            for i in range(0, len(waveform), chunk_size):
+                stream.write(waveform[i : i + chunk_size])  # Play in chunks
+        finally:
+            stream.stop_stream()
+            stream.close()
     finally:
         p.terminate()
