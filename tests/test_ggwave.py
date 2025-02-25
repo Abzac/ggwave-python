@@ -28,7 +28,7 @@ class TestGGWave(unittest.TestCase):
         waveform = self.gg.encode("", ProtocolId.AUDIBLE_FAST, volume=20)
         decoded = self.gg.decode(waveform)
 
-        self.assertIsNone(decoded, "Decoded message should not be None")
+        self.assertEqual(decoded, b"", "Decoded message should be empty")
 
     def test_invalid_waveform(self):
         """Test decoding an invalid waveform (should return None)."""

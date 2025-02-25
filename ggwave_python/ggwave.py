@@ -217,14 +217,16 @@ class GGWave:
         volume: int = 10,
     ) -> bytes:
         """Encodes a given payload into an audio waveform."""
+        if not payload:
+            return b""
         return ggwave.encode(
             payload, protocolId=protocol.value, volume=volume, instance=self.instance
         )
 
-    def decode(self, waveform: bytes) -> bytes | None:
+    def decode(self, waveform: bytes) -> bytes:
         """Decodes an audio waveform into the original data, if successful."""
         if not waveform:
-            return None
+            return b""
         return ggwave.decode(self.instance, waveform)
 
     @staticmethod
