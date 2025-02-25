@@ -1,9 +1,20 @@
 # GGWave Python Wrapper
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
+[![CI](https://github.com/Abzac/ggwave-python/actions/workflows/ci.yml/badge.svg)](https://github.com/Abzac/ggwave-python/actions)
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Linter: Ruff](https://img.shields.io/badge/linter-ruff-orange.svg)](https://github.com/astral-sh/ruff)
+[![Pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com/)
 
 A Python wrapper for GGWave, a data-over-sound communication library.
+
+This Python library is built on top of the existing **Python bindings** from the official 
+[GGWave repository](https://github.com/ggerganov/ggwave/tree/master). 
+However, the original bindings are minimal and lack usability features, 
+so this wrapper provides a more **user-friendly** API with **enum support, 
+streamlined encoding/decoding, and optional PyAudio integration**.
 
 ## 📌 Features
 - Encode and decode messages using sound waves.
@@ -14,12 +25,12 @@ A Python wrapper for GGWave, a data-over-sound communication library.
 
 ### Basic installation
 ```sh
-pip install ggwave
+pip install ggwave_python
 ```
 
 ### With audio support (PyAudio)
 ```sh
-pip install ggwave[audio]
+pip install ggwave_python[audio]
 ```
 
 ## 🔧 Usage
@@ -58,27 +69,95 @@ finally:
 ```
 
 ## ⚙️ Technical Details
-GGWave transmits data using **frequency-shift keying (FSK)**, allowing devices to communicate via sound. The transmission rate is **8-16 bytes/sec**, depending on the selected protocol. 
+GGWave transmits data using **frequency-shift keying (FSK)**, allowing devices to communicate via sound. 
+The transmission rate is **8-16 bytes/sec**, depending on the selected protocol. 
 
-## How to run tests
 
-Install pytest
+## 🛠️ Development and Code Formatting
+
+This project follows **strict code style and formatting rules**, enforced via `pre-commit` hooks.  
+We use the following tools:
+
+- **[Ruff](https://github.com/astral-sh/ruff)** → Linter, import sorting, and lightweight formatter.
+- **[Black](https://github.com/psf/black)** → Code auto-formatter.
+- **[Pytest](https://pytest.org/)** → For unit testing.
+
+### **🔧 Setting Up the Development Environment**
+To ensure a consistent environment, **use `poetry shell`** instead of installing packages globally.
 
 ```sh
-pip install pytest
+poetry shell  # Activate the virtual environment
+make init     # Install all dependencies
 ```
 
-Run all tests
+---
 
+### **✅ Linting and Formatting**
+Our project **requires clean, formatted code**. Use `make check` to validate your code.
+
+#### **Check code style (without modifying files)**
 ```sh
-pytest tests/
+make check
 ```
 
-Run a single test
-
+#### **Fix code style issues automatically**
+```sh
+make fix
 ```
+
+---
+
+### **🛠 Pre-Commit Hooks (Mandatory)**
+This project **requires** `pre-commit` hooks to ensure formatting and linting before commits.  
+You **must** install the pre-commit hook before making changes.
+
+#### **Install pre-commit hook**
+```sh
+pre-commit install
+```
+
+#### **Run pre-commit manually on all files**
+```sh
+make pre-commit
+```
+
+#### **Remove pre-commit hooks (if needed)**
+```sh
+pre-commit uninstall
+```
+
+---
+
+## **🧪 Running Tests**
+Tests are managed with `pytest`.  
+
+#### **Run all tests**
+```sh
+make tests
+```
+
+#### **Run a specific test**
+```sh
 pytest tests/test_ggwave.py -k test_encode_decode
 ```
+
+---
+
+## **📜 Makefile for Development Workflow**
+All development tasks can be executed via `make` commands.
+
+| Command            | Description                                           |
+|--------------------|-------------------------------------------------------|
+| `make init`       | Install dependencies inside the virtual environment   |
+| `make check`      | Run Ruff & Black in **check mode** (without changes)  |
+| `make fix`        | Auto-fix code style issues with Black & Ruff          |
+| `make tests`      | Run all tests with Pytest                             |
+| `make build`      | Build the package using Poetry                        |
+| `make pre-commit` | Run all pre-commit hooks manually                     |
+| `make help`       | Show all available `make` commands                    |
+
+Now your development workflow is **fully automated**! 🚀
+
 
 ## 📝 License
 This project is licensed under the MIT License.

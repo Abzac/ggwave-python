@@ -1,31 +1,37 @@
-[build-system]
-requires = ["setuptools", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "ggwave_python"
 version = "0.1.0"
 description = "A Python wrapper for GGWave – data-over-sound communication"
-authors = [{ name = "Abzac", email = "rapturec@gmail.com" }]
-license = { file = "LICENSE" }
+authors = ["Abzac <rapturec@gmail.com>"]
+license = "MIT"
 readme = "README.md"
-dependencies = []
+packages = [{ include = "ggwave_python" }]
 
 [tool.poetry.dependencies]
+python = ">=3.9,<3.11"
 ggwave = "^0.4.2"
-pyaudio = "^0.2.14"
+pyaudio = { version = "^0.2.14", optional = true }
 
-[project.optional-dependencies]
+[tool.poetry.extras]
 audio = ["pyaudio"]
 
-[tool.setuptools]
-packages = ["ggwave_python"]
+[tool.poetry.dev-dependencies]
+pytest = "^7.0"
+build = "^1.0.3"
+twine = "^4.0.2"
+ruff = "^0.9.7"
+black = "^25.1.0"
+pre-commit = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 88
-target-version = "py311"
+target-version = "py310"
 select = ["E", "F", "W", "I"]
 
 [tool.black]
 line-length = 88
-target-version = ["py311"]
+target-version = ["py310"]

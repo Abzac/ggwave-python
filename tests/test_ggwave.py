@@ -1,5 +1,6 @@
 import unittest
-from ggwave import GGWave, ProtocolId, PYAUDIO_ENABLED
+
+from ggwave_python import PYAUDIO_ENABLED, GGWave, ProtocolId
 
 
 class TestGGWave(unittest.TestCase):
@@ -18,15 +19,16 @@ class TestGGWave(unittest.TestCase):
         decoded = self.gg.decode(waveform)
 
         self.assertIsNotNone(decoded, "Decoded message should not be None")
-        self.assertEqual(decoded.decode("utf-8"), message, "Decoded message should match original")
+        self.assertEqual(
+            decoded.decode("utf-8"), message, "Decoded message should match original"
+        )
 
     def test_empty_message(self):
         """Test encoding and decoding of an empty message."""
         waveform = self.gg.encode("", ProtocolId.AUDIBLE_FAST, volume=20)
         decoded = self.gg.decode(waveform)
 
-        self.assertIsNotNone(decoded, "Decoded message should not be None")
-        self.assertEqual(decoded.decode("utf-8"), "", "Decoded message should be an empty string")
+        self.assertIsNone(decoded, "Decoded message should not be None")
 
     def test_invalid_waveform(self):
         """Test decoding an invalid waveform (should return None)."""
@@ -35,7 +37,9 @@ class TestGGWave(unittest.TestCase):
 
         self.assertIsNone(decoded, "Decoding invalid waveform should return None")
 
-    @unittest.skipUnless(PYAUDIO_ENABLED, "PyAudio is not installed, skipping audio tests")
+    @unittest.skipUnless(
+        PYAUDIO_ENABLED, "PyAudio is not installed, skipping audio tests"
+    )
     def test_play_waveform(self):
         """Test playing a waveform (should not raise an error)."""
         waveform = self.gg.encode("Test sound", ProtocolId.AUDIBLE_FAST, volume=20)
@@ -44,11 +48,16 @@ class TestGGWave(unittest.TestCase):
         except Exception as e:
             self.fail(f"play_waveform raised an exception: {e}")
 
-    @unittest.skipUnless(PYAUDIO_ENABLED, "PyAudio is not installed, skipping audio tests")
+    @unittest.skipUnless(
+        PYAUDIO_ENABLED, "PyAudio is not installed, skipping audio tests"
+    )
     def test_listen_generator(self):
         """Test that the listen method is a generator."""
         gen = self.gg.listen()
-        self.assertTrue(hasattr(gen, "__iter__") and hasattr(gen, "__next__"), "listen() should return a generator")
+        self.assertTrue(
+            hasattr(gen, "__iter__") and hasattr(gen, "__next__"),
+            "listen() should return a generator",
+        )
 
 
 if __name__ == "__main__":

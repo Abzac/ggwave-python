@@ -1,6 +1,8 @@
-from typing import Generator, Optional, Union
-import ggwave
+from collections.abc import Generator
 from enum import IntEnum, IntFlag
+from typing import Optional
+
+import ggwave
 
 PYAUDIO_ENABLED = False
 
@@ -16,6 +18,7 @@ GGWAVE_UNSET = object()  # Sentinel value to distinguish unset parameters
 
 class SampleFormat(IntEnum):
     """Represents the audio sample format used in GGWave."""
+
     UNDEFINED = 0
     U8 = 1  # Unsigned 8-bit
     I8 = 2  # Signed 8-bit
@@ -106,6 +109,7 @@ class ProtocolId(IntEnum):
 
 class Filter(IntEnum):
     """Available filter types for signal processing in GGWave."""
+
     HANN = 0  # Hann window function
     HAMMING = 1  # Hamming window function
     FIRST_ORDER_HIGH_PASS = 2  # First-order high-pass filter
@@ -113,6 +117,7 @@ class Filter(IntEnum):
 
 class OperatingMode(IntFlag):
     """Defines the operating modes for a GGWave instance."""
+
     RX = 1 << 1  # Enable receiving audio data
     TX = 1 << 2  # Enable transmitting audio data
     RX_AND_TX = RX | TX  # Enable both Rx and Tx
@@ -128,19 +133,19 @@ class GGWave:
 
     def __init__(
         self,
-        payload_length: Optional[int] = GGWAVE_UNSET,  # Default: -1 (variable length)
-        sample_rate_inp: Optional[float] = GGWAVE_UNSET,  # Default: 48000.0 Hz
-        sample_rate_out: Optional[float] = GGWAVE_UNSET,  # Default: 48000.0 Hz
-        sample_rate: Optional[float] = GGWAVE_UNSET,  # Default: 48000.0 Hz
-        samples_per_frame: Optional[int] = GGWAVE_UNSET,  # Default: 1024
-        sound_marker_threshold: Optional[float] = GGWAVE_UNSET,  # Default: 3.0
-        sample_format_inp: Optional[SampleFormat] = GGWAVE_UNSET,  # Default: F32
-        sample_format_out: Optional[SampleFormat] = GGWAVE_UNSET,  # Default: F32
-        operating_mode: Optional[OperatingMode] = GGWAVE_UNSET,  # Default: RX_AND_TX
+        payload_length: int | None = GGWAVE_UNSET,  # Default: -1 (variable length)
+        sample_rate_inp: float | None = GGWAVE_UNSET,  # Default: 48000.0 Hz
+        sample_rate_out: float | None = GGWAVE_UNSET,  # Default: 48000.0 Hz
+        sample_rate: float | None = GGWAVE_UNSET,  # Default: 48000.0 Hz
+        samples_per_frame: int | None = GGWAVE_UNSET,  # Default: 1024
+        sound_marker_threshold: float | None = GGWAVE_UNSET,  # Default: 3.0
+        sample_format_inp: SampleFormat | None = GGWAVE_UNSET,  # Default: F32
+        sample_format_out: SampleFormat | None = GGWAVE_UNSET,  # Default: F32
+        operating_mode: OperatingMode | None = GGWAVE_UNSET,  # Default: RX_AND_TX
         *,
         enable_log: bool = False,
         pyaudio_instance: Optional["pyaudio.PyAudio"] = None,
-        **kwargs
+        **kwargs,
     ):
         """
         Initializes a GGWave instance.
@@ -182,7 +187,9 @@ class GGWave:
         }
 
         # Apply user-defined values if they are set
-        self.parameters.update({k: v for k, v in updates.items() if v is not GGWAVE_UNSET})
+        self.parameters.update(
+            {k: v for k, v in updates.items() if v is not GGWAVE_UNSET}
+        )
         self.parameters.update(kwargs)
 
         # Create GGWave instance
@@ -203,12 +210,18 @@ class GGWave:
         if self._pyaudio_instance is not None:
             self._pyaudio_instance.terminate()
 
-    def encode(self, payload: Union[str, bytes], protocol: ProtocolId = ProtocolId.AUDIBLE_NORMAL,
-               volume: int = 10) -> bytes:
+    def encode(
+        self,
+        payload: str | bytes,
+        protocol: ProtocolId = ProtocolId.AUDIBLE_NORMAL,
+        volume: int = 10,
+    ) -> bytes:
         """Encodes a given payload into an audio waveform."""
-        return ggwave.encode(payload, protocolId=protocol.value, volume=volume, instance=self.instance)
+        return ggwave.encode(
+            payload, protocolId=protocol.value, volume=volume, instance=self.instance
+        )
 
-    def decode(self, waveform: bytes) -> Optional[bytes]:
+    def decode(self, waveform: bytes) -> bytes | None:
         """Decodes an audio waveform into the original data, if successful."""
         return ggwave.decode(self.instance, waveform)
 
@@ -240,11 +253,11 @@ class GGWave:
         ggwave.txToggleProtocol(protocol.value, int(state))
 
     def play_waveform(
-            self,
-            waveform: bytes,
-            sample_rate: int = 48000,
-            channels: int = 1,
-            sample_format: Optional[int] = GGWAVE_UNSET
+        self,
+        waveform: bytes,
+        sample_rate: int = 48000,
+        channels: int = 1,
+        sample_format: int | None = GGWAVE_UNSET,
     ):
         """
         Plays an audio waveform using the system's default output device.
@@ -260,7 +273,9 @@ class GGWave:
         if sample_format is GGWAVE_UNSET:
             sample_format = pyaudio.paFloat32  # Default to 32-bit float
 
-        stream = p.open(format=sample_format, channels=channels, rate=sample_rate, output=True)
+        stream = p.open(
+            format=sample_format, channels=channels, rate=sample_rate, output=True
+        )
 
         try:
             stream.write(waveform)
@@ -269,10 +284,7 @@ class GGWave:
             stream.close()
 
     def listen(
-            self,
-            sample_rate: int = 48000,
-            chunk_size: int = 1024,
-            channels: int = 1
+        self, sample_rate: int = 48000, chunk_size: int = 1024, channels: int = 1
     ) -> Generator[bytes, None, None]:
         """
         Continuously listens for incoming audio and attempts to decode GGWave signals.
@@ -292,7 +304,7 @@ class GGWave:
             channels=channels,
             rate=sample_rate,
             input=True,
-            frames_per_buffer=chunk_size
+            frames_per_buffer=chunk_size,
         )
 
         try:
@@ -307,7 +319,9 @@ class GGWave:
             stream.stop_stream()
             stream.close()
 
-    def _enable_pyaudio(self, pyaudio_instance: Optional["pyaudio.PyAudio"] = None) -> "pyaudio.PyAudio":
+    def _enable_pyaudio(
+        self, pyaudio_instance: Optional["pyaudio.PyAudio"] = None
+    ) -> "pyaudio.PyAudio":
         """
         Ensures that a PyAudio instance is available for audio playback or recording.
 
@@ -325,28 +339,10 @@ class GGWave:
             return self._pyaudio_instance
 
         if not PYAUDIO_ENABLED:
-            raise RuntimeError("PyAudio is not installed. Install it with 'pip install pyaudio'.")
+            raise RuntimeError(
+                "PyAudio is not installed. Install it with 'pip install pyaudio'."
+            )
 
         # Create a new PyAudio instance if none exists
         self._pyaudio_instance = pyaudio.PyAudio()
         return self._pyaudio_instance
-
-
-if __name__ == "__main__":
-    # Simple encoding/decoding example
-    gg = GGWave()
-    try:
-        waveform = gg.encode("Hello, world!", ProtocolId.AUDIBLE_FAST, volume=20)
-        decoded = gg.decode(waveform)
-        gg.play_waveform(waveform)  # Optionally, play an encoded waveform
-        print(decoded.decode("utf-8"))  # "Hello, world!"
-    finally:
-        gg.free()
-
-    # Stream listening (commented out for manual testing)
-    # gg = GGWave()
-    # try:
-    #     for chunk in gg.listen():
-    #         print("Received chunk:", chunk)
-    # finally:
-    #     gg.free()

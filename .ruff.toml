@@ -1,0 +1,7 @@
+line-length = 88
+target-version = "py310"
+lint.select = ["E", "F", "W", "I", "B", "C", "N", "UP"]
+lint.ignore = ["E501"]  # Ignore long lines, Black handles it
+
+[format]
+quote-style = "single"
