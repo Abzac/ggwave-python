@@ -1,11 +1,27 @@
 [tool.poetry]
 name = "ggwave_python"
-version = "0.1.5"
+version = "0.1.6"
 description = "A Python wrapper for GGWave – data-over-sound communication"
 authors = ["Abzac <rapturec@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "ggwave_python" }]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.urls]
+"Source Code" = "https://github.com/Abzac/ggwave-python"
+"Bug Tracker" = "https://github.com/Abzac/ggwave-python/issues"
+"Documentation" = "https://github.com/Abzac/ggwave-python/wiki"
 
 [tool.poetry.dependencies]
 python = ">3.9.1,<3.11"
