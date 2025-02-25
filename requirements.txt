@@ -1,0 +1,2 @@
+ggwave
+pyaudio  # Optional, used for audio streaming

@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ggwave_python"
+version = "0.1.0"
+description = "A Python wrapper for GGWave – data-over-sound communication"
+authors = [{ name = "Abzac", email = "rapturec@gmail.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+dependencies = []
+
+[tool.poetry.dependencies]
+ggwave = "^0.4.2"
+pyaudio = "^0.2.14"
+
+[project.optional-dependencies]
+audio = ["pyaudio"]
+
+[tool.setuptools]
+packages = ["ggwave_python"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+select = ["E", "F", "W", "I"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311"]
